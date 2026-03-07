@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/nx/schemas/workspace-schema.json",
+  "version": 2,
+  "projects": {
+    "web": "apps/web",
+    "api": "apps/api",
+    "ui": "libs/ui",
+    "types": "libs/types",
+    "api-client": "libs/api-client",
+    "auth": "libs/auth",
+    "validation": "libs/validation"
+  }
+}

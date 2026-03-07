@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  user
+  moderator
+  admin
+}
+
+enum UserStatus {
+  active
+  blocked
+}
+
+enum ContentStatus {
+  published
+  hidden
+  deleted
+  under_review
+}
+
+enum ReportStatus {
+  open
+  resolved
+  dismissed
+}
+
+model User {
+  id          Int           @id @default(autoincrement())
+  email       String        @unique
+  displayName String
+  avatarUrl   String?
+  role        UserRole      @default(user)
+  status      UserStatus    @default(active)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  lastLoginAt DateTime?
+  authAccounts AuthAccount[]
+  posts       Post[]
+  comments    Comment[]
+}
+
+model AuthAccount {
+  id             Int    @id @default(autoincrement())
+  userId         Int
+  provider       String
+  providerUserId String
+  user           User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerUserId])
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  slug      String   @unique
+  nameZh    String
+  nameEn    String
+  sortOrder Int      @default(0)
+  posts     Post[]
+}
+
+model Post {
+  id         Int           @id @default(autoincrement())
+  userId     Int
+  categoryId Int
+  title      String
+  body       String
+  status     ContentStatus @default(published)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category   Category      @relation(fields: [categoryId], references: [id])
+  comments   Comment[]
+  images     PostImage[]
+  tags       PostTag[]
+
+  @@index([categoryId, status, createdAt])
+}
+
+model PostImage {
+  id         Int    @id @default(autoincrement())
+  postId     Int
+  storageKey String
+  width      Int?
+  height     Int?
+  mimeType   String
+  post       Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        Int           @id @default(autoincrement())
+  postId    Int
+  userId    Int
+  body      String
+  status    ContentStatus @default(published)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  post      Post          @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Tag {
+  id    Int      @id @default(autoincrement())
+  slug  String   @unique
+  name  String
+  posts PostTag[]
+}
+
+model PostTag {
+  postId Int
+  tagId  Int
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+}
+
+model Report {
+  id             Int          @id @default(autoincrement())
+  reporterUserId Int
+  targetType     String
+  targetId       Int
+  reason         String
+  status         ReportStatus @default(open)
+  createdAt      DateTime     @default(now())
+}
+
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  actorUserId Int
+  action      String
+  entityType  String
+  entityId    Int
+  createdAt   DateTime @default(now())
+
+  @@index([actorUserId, createdAt])
+}

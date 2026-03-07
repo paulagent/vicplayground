@@ -1,0 +1,26 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2022",
+    "module": "esnext",
+    "lib": ["es2022", "dom"],
+    "skipLibCheck": true,
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@vic/ui": ["libs/ui/src/index.ts"],
+      "@vic/types": ["libs/types/src/index.ts"],
+      "@vic/api-client": ["libs/api-client/src/index.ts"],
+      "@vic/auth": ["libs/auth/src/index.ts"],
+      "@vic/validation": ["libs/validation/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}
