@@ -1,0 +1,25 @@
+{
+  "root": true,
+  "ignorePatterns": ["!**/*"],
+  "overrides": [
+    {
+      "files": ["**/*.ts", "**/*.tsx"],
+      "parser": "@typescript-eslint/parser",
+      "plugins": ["@typescript-eslint"],
+      "parserOptions": {
+        "project": ["./tsconfig.base.json"],
+        "sourceType": "module",
+        "ecmaVersion": "latest"
+      },
+      "rules": {}
+    },
+    {
+      "files": ["**/*.js", "**/*.jsx"],
+      "parserOptions": {
+        "sourceType": "module",
+        "ecmaVersion": "latest"
+      },
+      "rules": {}
+    }
+  ]
+}

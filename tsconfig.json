@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.base.json",
+  "files": [],
+  "references": [
+    { "path": "./apps/web" },
+    { "path": "./apps/api" },
+    { "path": "./libs/ui" },
+    { "path": "./libs/types" },
+    { "path": "./libs/api-client" },
+    { "path": "./libs/auth" },
+    { "path": "./libs/validation" }
+  ]
+}
