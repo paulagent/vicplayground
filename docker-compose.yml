@@ -1,0 +1,81 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: vicplayground
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d vicplayground']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    working_dir: /workspace
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vicplayground
+      PORT: 3333
+      WEB_ORIGIN: http://localhost:4200
+      GOOGLE_CLIENT_ID: disabled-for-now
+      GOOGLE_CLIENT_SECRET: disabled-for-now
+      GOOGLE_CALLBACK_URL: http://localhost:3333/api/auth/google/callback
+      S3_ENDPOINT: http://localhost:9000
+      S3_BUCKET: vic-community-images
+      S3_ACCESS_KEY_ID: disabled-for-now
+      S3_SECRET_ACCESS_KEY: disabled-for-now
+      CHOKIDAR_USEPOLLING: 'true'
+      WATCHPACK_POLLING: 'true'
+    ports:
+      - '3333:3333'
+    volumes:
+      - .:/workspace
+      - api_node_modules:/workspace/node_modules
+      - api_pnpm_store:/pnpm/store
+    command: >
+      sh -lc "pnpm config set store-dir /pnpm/store
+      && pnpm install
+      && pnpm exec prisma migrate deploy
+      && pnpm prisma:seed
+      && pnpm dev:api"
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    working_dir: /workspace
+    depends_on:
+      api:
+        condition: service_started
+    environment:
+      INTERNAL_API_BASE_URL: http://api:3333
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:3333
+      CHOKIDAR_USEPOLLING: 'true'
+      WATCHPACK_POLLING: 'true'
+    ports:
+      - '4200:4200'
+    volumes:
+      - .:/workspace
+      - web_node_modules:/workspace/node_modules
+      - web_pnpm_store:/pnpm/store
+    command: >
+      sh -lc "pnpm config set store-dir /pnpm/store
+      && pnpm install
+      && pnpm nx serve web --hostname 0.0.0.0 --port 4200"
+
+volumes:
+  postgres_data:
+  api_node_modules:
+  api_pnpm_store:
+  web_node_modules:
+  web_pnpm_store:
