@@ -3,6 +3,15 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.user.upsert({
+    where: { email: 'anonymous@vicplayground.local' },
+    update: { displayName: 'Vic Guest' },
+    create: {
+      email: 'anonymous@vicplayground.local',
+      displayName: 'Vic Guest'
+    }
+  });
+
   const categories = [
     { slug: 'outdoor', nameZh: '户外活动', nameEn: 'Outdoor Activities', sortOrder: 1 },
     { slug: 'crafts', nameZh: '手作工艺', nameEn: 'Crafts', sortOrder: 2 },

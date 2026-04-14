@@ -4,6 +4,12 @@ export class CreatePostDto {
   @IsInt()
   categoryId!: number;
 
+  @IsOptional()
+  @IsString()
+  @MinLength(2)
+  @MaxLength(40)
+  authorName?: string;
+
   @IsString()
   @MinLength(3)
   @MaxLength(120)
@@ -20,6 +26,12 @@ export class CreatePostDto {
 }
 
 export class UpdatePostDto {
+  @IsOptional()
+  @IsString()
+  @MinLength(2)
+  @MaxLength(40)
+  authorName?: string;
+
   @IsOptional()
   @IsInt()
   categoryId?: number;

@@ -69,6 +69,7 @@ model Post {
   id         Int           @id @default(autoincrement())
   userId     Int
   categoryId Int
+  authorName String?
   title      String
   body       String
   status     ContentStatus @default(published)
@@ -97,6 +98,7 @@ model Comment {
   id        Int           @id @default(autoincrement())
   postId    Int
   userId    Int
+  authorName String?
   body      String
   status    ContentStatus @default(published)
   createdAt DateTime      @default(now())

@@ -19,9 +19,8 @@ export class PostsController {
   }
 
   @Post()
-  @UseGuards(SessionAuthGuard)
-  createPost(@CurrentUser() user: { id: number }, @Body() dto: CreatePostDto) {
-    return this.postsService.create(user.id, dto);
+  createPost(@Body() dto: CreatePostDto) {
+    return this.postsService.create(dto);
   }
 
   @Patch(':id')
